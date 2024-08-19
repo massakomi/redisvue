@@ -21,7 +21,7 @@ class RedisVue
     {
         $this->redis = new \Redis();
         try {
-            $this->redis->connect('127.0.0.1', 6379);
+            $this->redis->connect('Redis-7.0', 6379);
         } catch (\RedisException $e) {
             exit(json_encode(['error' => $e->getMessage()]));
         }
