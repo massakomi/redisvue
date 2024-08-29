@@ -1,2 +1,5 @@
 .idea
+.osp
+tasks.md
 /docker/nginx/logs/*.log
+/public/vendor

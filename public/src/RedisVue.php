@@ -1,14 +1,5 @@
 <?php
 
-//$env = parse_ini_file('.env');
-//$header = $env["REDIS_HOST"];
-
-// https://redis.io/commands/
-// Строки   https://github.com/phpredis/phpredis#keys-and-strings
-// списки   https://github.com/phpredis/phpredis#lists
-// хеш таблицы    https://github.com/phpredis/phpredis#hashes
-
-
 class RedisVue
 {
     private Redis $redis;
@@ -19,9 +10,10 @@ class RedisVue
      */
     public function __construct()
     {
+        $_ENV = parse_ini_file(dirname(__DIR__) . '/.env');
         $this->redis = new \Redis();
         try {
-            $this->redis->connect('redis');
+            $this->redis?->connect($_ENV['REDIS_HOST']);
         } catch (\RedisException $e) {
             exit(json_encode(['error' => $e->getMessage()]));
         }
@@ -129,16 +121,3 @@ class RedisVue
         return $allValues;
     }
 }
-
-
-$redis = new RedisVue;
-
-
-if ($_GET['get']) {
-    $data = $redis->getData();
-    //echo '<pre>'.print_r($data, 1).'</pre>';
-} else {
-    $data = json_decode(file_get_contents('php://input'), true);
-
-}
-echo json_encode($data);

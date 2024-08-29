@@ -1,16 +1,9 @@
-const TypesList = {
-  props: ['types', 'selected'],
-  emits: ['update:selected'],
-  template: `
-      <div class="mb-3" :style="{fontSize: '14px'}">
-          <div class="form-check form-check-inline" v-for="(item, index) in types">
-            <input class="form-check-input" type="radio" name="selectedType" v-model="selected" @input="$emit('update:selected', $event.target.value)" :value="item.type" :id="item.type + index">
-            <label class="form-check-label" :for="item.type + index">
-              {{ item.name }}
-            </label>
-         </div>
-    </div>`
-}
+
+import { createApp } from './vendor/vue.esm-browser.js'
+import { TypesList } from "./components/TypesList.js";
+
+import Fetch from "./mixins/Fetch.js";
+
 
 const Redis = {
   data() {
@@ -29,23 +22,13 @@ const Redis = {
       ]
     }
   },
+  mixins: [
+    Fetch
+  ],
   methods: {
-    save: function () {
-      fetch('save.php', {
-        method: 'POST',
-        body: JSON.stringify(this.collectBody()),
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-        .then(response => {
-          if (!response.ok) {
-            return Promise.reject(response);
-          }
-          return response.json();
-        })
-        .then(data => this.refresh(data))
-        .catch(error => {});
+    async save () {
+      let data = await this.queryPost(this.collectBody())
+      this.refresh(data)
     },
     collectBody: function () {
       let values = []
@@ -66,29 +49,18 @@ const Redis = {
     if (this.selectedType === 'string') {
       this.countValues = 1;
     }
-    //console.log('beforeUpdate', this.selectedType)
+  },
+  mount() {
+
   },
   components: {
     TypesList
   }
-  /*beforeCreate() {
-    console.log('beforeCreate')
-  },
-  created() {
-    console.log('created')
-  },
-  beforeMount() {
-    console.log('beforeMount')
-  },
-  mounted() {
-    console.log('mounted')
-  },
-  updated() {
-    console.log('updated')
-  },
-  activated() {
-    console.log('activated')
-  }*/
 }
 
-Vue.createApp(Redis).mount('#app')
+
+let app = createApp(Redis);
+
+app.component('types-list', TypesList)
+
+app.mount('#app')
