@@ -8,8 +8,12 @@
 <body>
 
 <div class="container-fluid mt-3" id="app">
-    <h1>Redis Manager</h1>
-    <div class="row">
+    <h1>Redis Manager
+        <div class="spinner-border text-primary" role="status" v-if="loader">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </h1>
+    <div class="row" v-if="connected">
         <div class="col">
             <div class="mb-3">
                 <label class="form-label">Key</label>
@@ -44,6 +48,8 @@
             </template>
         </div>
     </div>
+
+    <div class="alert alert-danger" v-if="error" v-html="error"></div>
 </div>
 
 <script type="module" src="/js/script.js"></script>

@@ -1,8 +1,16 @@
 
 export default {
+
+  data() {
+    return {
+      error: false,
+      loader: true,
+    }
+  },
+
   methods: {
     queryJson: async function (query) {
-      let response = await fetch(`action.php?${query}`, {
+      let response = await fetch(`api.php?${query}`, {
         headers: {
           "Content-Type": "application/json"
         }
@@ -11,7 +19,7 @@ export default {
     },
 
     queryPost: async function (json) {
-      let response = await fetch('action.php', {
+      let response = await fetch('api.php', {
         method: 'POST',
         body: JSON.stringify(json),
         headers: {
@@ -21,7 +29,16 @@ export default {
       return this.queryResponse(response)
     },
 
-    queryResponse: async function (response, type = 'json') {
+    queryResponse: async function(response) {
+      let data = await this.queryResponseCheck(response)
+      if (data.error) {
+        this.error = data.message
+        this.loader = false
+      }
+      return data;
+    },
+
+    queryResponseCheck: async function (response, type = 'json') {
       if (response.ok) {
         let content;
         if (type === 'text') {
@@ -39,10 +56,8 @@ export default {
         let error;
         try {
           error = await response.json();
-          //showError(`${error.message} <span class="text-black-50">${error.file}</span>`);
         } catch (e) {
           let message = `${response.status} ${response.statusText}`;
-          //showError(message);
           error = {error: true, message}
         }
         return error;

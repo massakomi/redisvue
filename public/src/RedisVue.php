@@ -3,20 +3,21 @@
 class RedisVue
 {
     private Redis $redis;
-    private $idleTime;
+    private int $idleTime;
 
     /**
      * @throws RedisException
      */
     public function __construct()
     {
+
+    }
+
+    public function connect()
+    {
         $_ENV = parse_ini_file(dirname(__DIR__) . '/.env');
         $this->redis = new \Redis();
-        try {
-            $this->redis?->connect($_ENV['REDIS_HOST']);
-        } catch (\RedisException $e) {
-            exit(json_encode(['error' => $e->getMessage()]));
-        }
+        $this->redis?->connect($_ENV['REDIS_HOST']);
     }
 
     function getInfo(): array

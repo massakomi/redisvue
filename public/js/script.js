@@ -8,6 +8,9 @@ import Fetch from "./mixins/Fetch.js";
 const Redis = {
   data() {
     return {
+      connected: false,
+      error: false,
+      loader: true,
       key: null,
       values: [1, '2,4'],
       countValues: 2,
@@ -50,8 +53,8 @@ const Redis = {
       this.countValues = 1;
     }
   },
-  mount() {
-
+  async mounted() {
+    await this.queryJson('action=check')
   },
   components: {
     TypesList
