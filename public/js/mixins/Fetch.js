@@ -10,6 +10,7 @@ export default {
 
   methods: {
     queryJson: async function (query) {
+      this.loader = true
       let response = await fetch(`api.php?${query}`, {
         headers: {
           "Content-Type": "application/json"
@@ -18,8 +19,9 @@ export default {
       return this.queryResponse(response)
     },
 
-    queryPost: async function (json) {
-      let response = await fetch('api.php', {
+    queryPost: async function (query, json) {
+      this.loader = true
+      let response = await fetch(`api.php?${query}`, {
         method: 'POST',
         body: JSON.stringify(json),
         headers: {
@@ -33,8 +35,8 @@ export default {
       let data = await this.queryResponseCheck(response)
       if (data.error) {
         this.error = data.message
-        this.loader = false
       }
+      this.loader = false
       return data;
     },
 

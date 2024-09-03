@@ -8,20 +8,24 @@ import Fetch from "./mixins/Fetch.js";
 const Redis = {
   data() {
     return {
-      connected: false,
+      connected: true,
       error: false,
       loader: true,
+
+      info: [],
+      data: [],
+
       key: null,
-      values: [1, '2,4'],
+      values: [],
       countValues: 2,
-      selectedType: 'list',
+      type: 'string',
       expired: null,
       rewrite: true,
       types: [
         {'type': 'string', 'name': 'String'},
         {'type': 'list', 'name': 'List'},
         {'type': 'hash', 'name': 'Hash'},
-        {'type': 'unique', 'name': 'Unique list'},
+        {'type': 'unique', 'name': 'Set'},
       ]
     }
   },
@@ -30,7 +34,7 @@ const Redis = {
   ],
   methods: {
     async save () {
-      let data = await this.queryPost(this.collectBody())
+      let data = await this.queryPost('action=save', this.collectBody())
       this.refresh(data)
     },
     collectBody: function () {
@@ -39,22 +43,29 @@ const Redis = {
         values.push(value)
       }
       return {
-        selectedType: this.selectedType,
+        type: this.type,
         key: this.key,
+        expired: this.expired,
         values: values
       }
     },
-    refresh: function(data) {
-      console.log(data)
+    async refresh() {
+      this.data = await this.queryJson('action=data');
     }
   },
   beforeUpdate() {
-    if (this.selectedType === 'string') {
+    if (this.type === 'string') {
       this.countValues = 1;
     }
   },
   async mounted() {
-    await this.queryJson('action=check')
+    let data = await this.queryJson('action=check');
+    if (data.error) {
+      this.connected = false;
+      return;
+    }
+    this.info = await this.queryJson('action=info');
+    this.refresh()
   },
   components: {
     TypesList
@@ -63,7 +74,5 @@ const Redis = {
 
 
 let app = createApp(Redis);
-
-app.component('types-list', TypesList)
 
 app.mount('#app')

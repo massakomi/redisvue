@@ -4,16 +4,20 @@
     <meta charset="UTF-8">
     <title>Redis Manager</title>
     <link href="/js/vendor/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .fs-12 {font-size: 0.75rem!important;}
+        .fs-14 {font-size: 0.875rem!important;}
+    </style>
 </head>
-<body>
+<body id="app">
 
-<div class="container-fluid mt-3" id="app">
+<div class="container-fluid mt-3">
     <h1>Redis Manager
-        <div class="spinner-border text-primary" role="status" v-if="loader">
+        <span class="spinner-border text-primary" role="status" v-if="loader">
             <span class="visually-hidden">Loading...</span>
-        </div>
+        </span>
     </h1>
-    <div class="row" v-if="connected">
+    <div class="row mb-3" v-if="connected">
         <div class="col">
             <div class="mb-3">
                 <label class="form-label">Key</label>
@@ -34,7 +38,7 @@
             <button type="submit" class="btn btn-primary" @click="save()">Save</button>
         </div>
         <div class="col">
-            <label class="form-label">Value  <span v-if="selectedType !== 'string'" class="badge bg-success" style="cursor: pointer" @click="countValues++">Add</span></label>
+            <label class="form-label">Value  <span v-if="selectedType !== 'string'" class="badge bg-success" role="button" @click="countValues++">Add</span></label>
             <div class="mb-3" v-for="n in countValues" :key="n">
                 <input type="text" class="form-control form-control-sm" v-model="values[n - 1]" />
             </div>
@@ -50,6 +54,47 @@
     </div>
 
     <div class="alert alert-danger" v-if="error" v-html="error"></div>
+
+    <div class="row mb-3">
+        <div class="col">
+            <h2>Data</h2>
+            <table class="table table-sm table-striped fs-12">
+                <tr>
+                    <th>Key</th>
+                    <th>Value</th>
+                    <th>Type</th>
+                    <th>TTL</th>
+                </tr>
+                <tr v-for="item in data">
+                    <td>{{item.key}}</td>
+                    <td>{{item.value}}</td>
+                    <td>{{item.type}}</td>
+                    <td>{{item.ttl}}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="col">
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <h2>Info</h2>
+            <table class="table table-sm table-striped fs-12">
+                <tr v-for="item in info">
+                    <td>{{item.comment}} ({{item.code}})</td>
+                    <td>{{item.value}}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="col">
+
+        </div>
+    </div>
+
+
+
 </div>
 
 <script type="module" src="/js/script.js"></script>

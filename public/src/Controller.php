@@ -25,7 +25,7 @@ class Controller
 
     public function unknownAction()
     {
-        $this->actionTest();
+        $this->data = ['error' => true, 'message' => 'Unknown action'];
     }
 
     public function actionData()
@@ -33,13 +33,22 @@ class Controller
         $this->data = $this->redis->getData();
     }
 
-    public function actionTest()
-    {
-        $this->data = json_decode(file_get_contents('php://input'), true);
-    }
     public function actionInfo()
     {
-        $this->data = $this->redis->getInfo();
+        $this->data = $this->redis->getMainInfo();
+    }
+
+    public function actionSave()
+    {
+        $input = json_decode(file_get_contents('php://input'), true);
+        if ($input['type'] === 'string') {
+            $options = [];
+            if ($input['expired']) {
+                $options ['ex'] = $input['expired'];
+            }
+            $this->redis->redis->set($input['key'], $input['values'][0], $options);
+        }
+        $this->data = $input;
     }
 
     static $lastError = false;
